@@ -1,0 +1,26 @@
+# env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+# python
+__pycache__/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+# node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+# supabase
+supabase/.branches/
+supabase/.temp/
+# os / editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
