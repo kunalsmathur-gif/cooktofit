@@ -5,8 +5,26 @@ CookToFit is a home-cooking and nutrition coach that lives in **WhatsApp**, with
 
 > Status: **Phase 0 (foundations)**. Invite-only and pre-launch.
 
+## Repo layout
+| Path | What |
+|---|---|
+| `apps/brain` | FastAPI backend: WhatsApp webhook, agents, nutrition engine (Python 3.12, uv) |
+| `apps/web` | Next.js dashboard + PWA, mobile-first |
+| `supabase` | Postgres migrations, seed, pgTAP tests |
+| `docs` | PRD, architecture, ADRs |
+| `assets/brand` | Logo, icons, design tokens |
+
+## Quick start
+Needs uv, Node 22+ and Docker. Full details in [docs/SETUP.md](docs/SETUP.md).
+```bash
+make install && make db-start && make db-reset
+make brain   # :8000
+make web     # :3000
+make check   # what CI runs
+```
+
 ## Docs
-- [Product requirements](docs/PRD.md) · [Architecture](docs/ARCHITECTURE.md) · [Deep dive](docs/DEEP_DIVE.md) · [Plan](docs/PLAN.md)
+- [Setup](docs/SETUP.md) · [Product requirements](docs/PRD.md) · [Architecture](docs/ARCHITECTURE.md) · [Deep dive](docs/DEEP_DIVE.md) · [Plan](docs/PLAN.md)
 - [Architecture decisions](docs/adr/README.md) · [Domain glossary](CONTEXT.md) · [Brand kit](assets/brand/README.md)
 
 ## Data attribution
