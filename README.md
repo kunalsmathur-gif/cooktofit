@@ -29,3 +29,6 @@ make check   # what CI runs
 
 ## Data attribution
 Product data © [Open Food Facts](https://world.openfoodfacts.org/) contributors, available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). See [NOTICE](NOTICE).
+
+## License
+Code: [Apache 2.0](LICENSE). Third-party data keeps its own licence; see [NOTICE](NOTICE).
