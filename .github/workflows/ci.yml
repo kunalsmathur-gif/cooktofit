@@ -55,5 +55,14 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 2.121.0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/brain/uv.lock
       - run: supabase db start
       - run: supabase test db
+      - name: Brain tests against the database
+        working-directory: apps/brain
+        env:
+          REQUIRE_DB: "1"
+        run: uv sync --locked && uv run pytest -q

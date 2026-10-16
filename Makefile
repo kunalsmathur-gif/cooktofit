@@ -1,7 +1,7 @@
 SUPABASE := npx -y supabase@2.121.0
 SB_EXCLUDE := studio,edge-runtime,imgproxy,vector,logflare,supavisor,mailpit,realtime
 
-.PHONY: help install db-start db-stop db-reset db-test brain web lint test check
+.PHONY: help install db-start db-stop db-reset db-test brain web invite chat lint test check
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -27,6 +27,12 @@ brain: ## Run FastAPI brain on :8000
 
 web: ## Run Next.js web on :3000
 	cd apps/web && npm run dev
+
+invite: ## Invite a number: make invite PHONE=+91... NAME=Kunal [ROLE=admin] [HOUSEHOLD=Home]
+	cd apps/brain && uv run python -m app.cli invite "$(PHONE)" "$(NAME)" --role $(or $(ROLE),member) $(if $(HOUSEHOLD),--household "$(HOUSEHOLD)")
+
+chat: ## Chat through the real gate as a number: make chat PHONE=+91...
+	cd apps/brain && uv run python -m app.cli chat "$(PHONE)"
 
 lint: ## Lint + typecheck both apps
 	cd apps/brain && uv run ruff check . && uv run ruff format --check . && uv run mypy

@@ -1,0 +1,120 @@
+"""Admin CLI and terminal chat simulator.
+
+uv run python -m app.cli invite +919876543210 "Kunal" --role admin --household "Home"
+uv run python -m app.cli list
+uv run python -m app.cli revoke +919876543210
+uv run python -m app.cli chat +919876543210
+"""
+
+import argparse
+import asyncio
+import sys
+from typing import Any
+
+import psycopg
+
+from app.config import get_settings
+from app.gate import invites
+from app.gate.identity import normalize_phone
+from app.gate.service import Gate, Inbound
+from app.inbound import handle
+
+
+async def _connect() -> psycopg.AsyncConnection[Any]:
+    s = get_settings()
+    return await psycopg.AsyncConnection.connect(
+        s.database_url, autocommit=True, connect_timeout=s.db_connect_timeout_s
+    )
+
+
+async def cmd_invite(a: argparse.Namespace) -> int:
+    s = get_settings()
+    async with await _connect() as conn:
+        try:
+            inv = await invites.create_invite(
+                conn,
+                a.phone,
+                a.name,
+                role=a.role,
+                household=a.household,
+                email=a.email,
+                ttl_days=s.invite_ttl_days,
+            )
+        except invites.InviteError as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+    print(f"Invited {inv.phone_e164} (expires {inv.expires_at:%Y-%m-%d %H:%M %Z})")
+    print(f"Code: {inv.code}")
+    link = invites.invite_link(s.whatsapp_number, inv.code)
+    print(f"Link: {link}" if link else "Link: set WHATSAPP_NUMBER to generate a wa.me link")
+    print("Send this privately to the invitee only. It works only from their number.")
+    return 0
+
+
+async def cmd_revoke(a: argparse.Namespace) -> int:
+    async with await _connect() as conn:
+        changed = await invites.revoke(conn, a.phone)
+    print("revoked" if changed else "no change (unknown or already revoked)")
+    return 0
+
+
+async def cmd_list(_: argparse.Namespace) -> int:
+    async with await _connect() as conn:
+        rows = await invites.list_access(conn)
+    for r in rows:
+        print(
+            f"{r['phone_e164']:<16} {r['display_name']:<16} {r['role']:<7} {r['status']:<8} "
+            f"fails={r['failed_attempts']}"
+        )
+    if not rows:
+        print("(empty)")
+    return 0
+
+
+async def cmd_chat(a: argparse.Namespace) -> int:
+    phone = normalize_phone(a.phone)
+    gate = Gate(get_settings().phone_hash_key.get_secret_value())
+    print(f"Simulating WhatsApp from {phone}. Ctrl-D to quit.")
+    async with await _connect() as conn:
+        while True:
+            try:
+                text = await asyncio.to_thread(input, "you> ")
+            except EOFError:
+                print()
+                return 0
+            outcome = await handle(conn, gate, Inbound(phone, text, a.group))
+            for reply in outcome.replies or ["(no reply)"]:
+                print(f"bot> {reply}")
+            print(f"     [{outcome.decision}]")
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="cooktofit")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    i = sub.add_parser("invite", help="invite (or re-invite) a phone number")
+    i.add_argument("phone")
+    i.add_argument("name")
+    i.add_argument("--role", choices=["admin", "member"], default="member")
+    i.add_argument("--household")
+    i.add_argument("--email")
+    i.set_defaults(fn=cmd_invite)
+
+    r = sub.add_parser("revoke", help="revoke access immediately")
+    r.add_argument("phone")
+    r.set_defaults(fn=cmd_revoke)
+
+    sub.add_parser("list", help="show the allow-list").set_defaults(fn=cmd_list)
+
+    c = sub.add_parser("chat", help="chat as a phone number through the real gate")
+    c.add_argument("phone")
+    c.add_argument("--group", action="store_true", help="pretend it's a group message")
+    c.set_defaults(fn=cmd_chat)
+
+    a = p.parse_args(argv)
+    result: int = asyncio.run(a.fn(a))
+    return result
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
