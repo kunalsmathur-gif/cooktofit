@@ -11,3 +11,4 @@
 | [007](0007-automated-catalogue-pipeline.md) | Automated branded-catalogue pipeline | Accepted |
 | [008](0008-no-telegram-fallback.md) | No Telegram fallback for now | Accepted |
 | [009](0009-open-food-facts-primary-source.md) | Open Food Facts as the primary product source | Accepted |
+| [010](0010-dish-catalogue.md) | Classified dish catalogue, computed from ingredients, hybrid RAG | Accepted |

@@ -486,3 +486,4 @@ docs/                     PRD, DEEP_DIVE, ADRs, brand/
      - Keep OFF-derived rows identifiable, so the derived database can be published under ODbL if it is ever shared publicly (share-alike).
      - Product images are CC BY-SA. We don't store them, so this applies only if they are added later.
    - **Contribution back (Phase 2):** corrections and new products are submitted back through the OFF write API with a named app `User-Agent`.
+10. **ADR-010: Classified dish catalogue.** Dishes are a separate layer whose nutrition is computed from ingredients, with variants (home, restaurant, low-oil), classification (cuisine/region, meal slot, diet, allergens, method, utensils, time, protein source, serving units, multilingual aliases), hybrid retrieval (SQL filters + pg_trgm + pgvector) for the coach, and growth from use via the shared submission rules. See `docs/adr/0010-dish-catalogue.md`.
