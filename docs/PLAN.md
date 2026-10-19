@@ -188,3 +188,11 @@ Multi-tenant hardening, Play Store listing, subscriptions, rate limits and per-u
 ## 9. Open items
 - Health inputs for the MVP were not specified. The plan assumes Health Connect and blood reports wait for Phase 2.
 - Branding: DONE. CookToFit · "Every meal is a rep." · Monoline Flex Pan icon · Espresso & Terracotta (light+dark). Kit in `assets/brand/` (storyboard.html, SVG+PNG, tokens.json) — copy to repo `assets/` + `docs/brand/` at scaffold time.
+
+## 10. Progress
+- **2026-10-15 — Phase 0 done:** FastAPI brain, Next.js web shell (PWA, brand tokens, OFF attribution), Supabase foundation + pgTAP, Makefile, SETUP guide, CI.
+- **2026-10-15 — Apache-2.0 licence** (LICENSE, NOTICE for third-party data).
+- **2026-10-15 — Invite gate:** phone-bound single-use codes before any media/LLM work, admin CLI, `/dev/simulate`.
+- **2026-10-15 — ADR-010 dish catalogue** and account setup guides in `docs/SETUP.md`.
+- **2026-10-19 — Targets engine:** deterministic BMR/TDEE, macros, ICMR-NIN 2020 micronutrients (verified), safety flags, overrides.
+- **Next:** Indian food databases (IFCT 2017, INDB) → USDA/OFF → temporal data model → onboarding → dish catalogue.

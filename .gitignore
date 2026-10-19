@@ -24,3 +24,6 @@ supabase/.temp/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# downloaded third-party datasets
+.cache/
