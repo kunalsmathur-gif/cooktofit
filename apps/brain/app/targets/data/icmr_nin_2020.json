@@ -1,0 +1,53 @@
+{
+  "reference": "ICMR-NIN 2020 RDA",
+  "status": "verified",
+  "source": "NIN, Summary of Recommendations: RDA & EAR for Indians 2020 (short report). https://web.archive.org/web/20201007064131/https://www.nin.res.in/nutrition2020/RDA_short_Report.pdf",
+  "notes": [
+    "Vitamin D is given as 600 IU; stored as 15 µg (1 µg = 40 IU).",
+    "Potassium: table says 3500 mg, narrative says 3510 mg; we use the table.",
+    "Fibre: ~40 g per 2000 kcal (narrative).",
+    "Lactation B12: report shows a +1.0 µg addition over 2.5 µg; exact cell not visually confirmed.",
+    "Pregnancy energy +350 kcal applied from the 2nd trimester, matching common practice; the short report gives a single figure.",
+    "No elderly-specific micronutrient rows and no omega-3 g/day value in the short report.",
+    "Fat is given as visible fat g/day by activity, not % energy; the engine uses a WHO-style 25% of energy."
+  ],
+  "units": {
+    "calcium_mg": "mg", "iron_mg": "mg", "zinc_mg": "mg", "magnesium_mg": "mg",
+    "vitamin_a_ug": "µg", "vitamin_c_mg": "mg", "folate_ug": "µg", "vitamin_b12_ug": "µg",
+    "vitamin_d_ug": "µg", "potassium_mg": "mg", "sodium_mg": "mg"
+  },
+  "kinds": {"sodium_mg": "max"},
+  "adult": {
+    "male": {
+      "calcium_mg": 1000, "iron_mg": 19, "zinc_mg": 17, "magnesium_mg": 385,
+      "vitamin_a_ug": 1000, "vitamin_c_mg": 80, "folate_ug": 300, "vitamin_b12_ug": 2.5,
+      "vitamin_d_ug": 15, "potassium_mg": 3500, "sodium_mg": 2000
+    },
+    "female": {
+      "calcium_mg": 1000, "iron_mg": 29, "zinc_mg": 13.2, "magnesium_mg": 325,
+      "vitamin_a_ug": 840, "vitamin_c_mg": 65, "folate_ug": 220, "vitamin_b12_ug": 2.5,
+      "vitamin_d_ug": 15, "potassium_mg": 3500, "sodium_mg": 2000
+    }
+  },
+  "physiology": {
+    "pregnant": {
+      "iron_mg": 40, "folate_ug": 570, "zinc_mg": 14.5, "magnesium_mg": 385,
+      "vitamin_a_ug": 900, "vitamin_c_mg": 80, "vitamin_b12_ug": 2.75
+    },
+    "lactating": {
+      "calcium_mg": 1200, "iron_mg": 23, "folate_ug": 330, "zinc_mg": 14, "magnesium_mg": 325,
+      "vitamin_a_ug": 950, "vitamin_c_mg": 115, "vitamin_b12_ug": 3.5
+    }
+  },
+  "energy_extra_kcal": {
+    "pregnant_t1": 0, "pregnant_t2": 350, "pregnant_t3": 350,
+    "lactating_0_6m": 600, "lactating_7_12m": 520
+  },
+  "protein_extra_g": {
+    "pregnant_t1": 0, "pregnant_t2": 9.5, "pregnant_t3": 22,
+    "lactating_0_6m": 16.9, "lactating_7_12m": 13.2
+  },
+  "protein_rda_g_per_kg": 0.83,
+  "protein_max_pct_energy": {"default": 0.35, "pregnant": 0.30},
+  "fibre_g_per_1000_kcal": 20
+}

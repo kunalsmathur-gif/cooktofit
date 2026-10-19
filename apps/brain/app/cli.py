@@ -18,6 +18,8 @@ from app.gate import invites
 from app.gate.identity import normalize_phone
 from app.gate.service import Gate, Inbound
 from app.inbound import handle
+from app.targets.engine import compute
+from app.targets.models import Activity, Goal, Persona, Physiology, Profile, Sex
 
 
 async def _connect() -> psycopg.AsyncConnection[Any]:
@@ -88,6 +90,39 @@ async def cmd_chat(a: argparse.Namespace) -> int:
             print(f"     [{outcome.decision}]")
 
 
+async def cmd_targets(a: argparse.Namespace) -> int:
+    ts = compute(
+        Profile(
+            sex=Sex(a.sex),
+            age=a.age,
+            height_cm=a.height,
+            weight_kg=a.weight,
+            activity=Activity(a.activity),
+            goal=Goal(a.goal),
+            persona=Persona(a.persona),
+            pace_kg_per_week=a.pace,
+            body_fat_pct=a.body_fat,
+            known_tdee_kcal=a.tdee,
+            training_days_per_week=a.training_days,
+            physiology=Physiology(a.physiology),
+        )
+    )
+    print(f"Formula {ts.formula_version} · {ts.reference} · goal: {ts.effective_goal}")
+    for key, t in ts.targets.items():
+        mark = "*" if key in ts.visible else " "
+        cmp = {"min": "≥", "max": "≤"}.get(t.kind, " ")
+        print(f"{mark} {key:<15} {cmp}{t.value:>7g} {t.unit:<4}  {t.why}")
+    if ts.training_day and ts.rest_day:
+        print(
+            f"  training day: {ts.training_day.kcal:g} kcal, {ts.training_day.carbs_g:g} g carbs"
+            f" · rest day: {ts.rest_day.kcal:g} kcal, {ts.rest_day.carbs_g:g} g carbs"
+        )
+    for f in ts.flags:
+        print(f"[{f.severity}] {f.message}")
+    print("* = shown to this persona")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="cooktofit")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -110,6 +145,21 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("phone")
     c.add_argument("--group", action="store_true", help="pretend it's a group message")
     c.set_defaults(fn=cmd_chat)
+
+    t = sub.add_parser("targets", help="compute nutrition targets (no DB needed)")
+    t.add_argument("--sex", choices=[x.value for x in Sex], required=True)
+    t.add_argument("--age", type=int, required=True)
+    t.add_argument("--height", type=float, required=True, help="cm")
+    t.add_argument("--weight", type=float, required=True, help="kg")
+    t.add_argument("--activity", choices=[x.value for x in Activity], default="light")
+    t.add_argument("--goal", choices=[x.value for x in Goal], default="maintain")
+    t.add_argument("--persona", choices=[x.value for x in Persona], default="intermediate")
+    t.add_argument("--pace", type=float, help="kg per week")
+    t.add_argument("--body-fat", type=float)
+    t.add_argument("--tdee", type=int, help="your tracked maintenance kcal")
+    t.add_argument("--training-days", type=int, default=0)
+    t.add_argument("--physiology", choices=[x.value for x in Physiology], default="none")
+    t.set_defaults(fn=cmd_targets)
 
     a = p.parse_args(argv)
     result: int = asyncio.run(a.fn(a))
